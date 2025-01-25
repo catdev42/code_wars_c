@@ -8,7 +8,7 @@
         "type": "cppdbg",
         "request": "launch",
         "program": "${workspaceFolder}/a.out",
-        "args": [],
+        "args": ["3"],
         "stopAtEntry": false,
         "cwd": "${workspaceFolder}",
         "environment": [],
