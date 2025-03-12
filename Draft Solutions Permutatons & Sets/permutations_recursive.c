@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <string.h>
 
+//NOT IN LEXIGRAPHICAL ORDER, WORLS FOR N QUEENS and TSP
+
 // Function to swap two characters
 void	swap(char *x, char *y)
 {
@@ -12,21 +14,20 @@ void	swap(char *x, char *y)
 }
 
 // Recursive function to generate all permutations
-void	generatePermutations(char *str, int start, int end)
+void	generatePermutations(char *str, int start, int len)
 {
-	if (start == end)
+	if (start == len-1)
 	{
 		printf("%s\n", str);
 	}
 	else
 	{
-		for (int i = start; i <= end; i++)
+		for (int i = start; i < len; i++)
 		{
-			// Swap current index with the start index
+			// Swap  start index with the current index (itself included)
 			swap(&str[start], &str[i]);
-			// Recurse for the rest of the string
-			generatePermutations(str, start + 1, end);
-			// Backtrack to undo the swap
+			generatePermutations(str, start + 1, len);
+			// Undo the swap to start the next branch
 			swap(&str[start], &str[i]);
 		}
 	}
@@ -35,14 +36,10 @@ void	generatePermutations(char *str, int start, int end)
 int	main(int argc, char **argv)
 {
 	char	input[100] = "012345";
-	// char	*input;
 	int		n;
 
-	// printf("Enter a string to generate permutations: ");
-	// scanf("%s", input);
-	// input = argv[1];
 	n = strlen(input);
 	printf("Permutations of %s:\n", input);
-	generatePermutations(input, 0, n - 1);
+	generatePermutations(input, 0, n);
 	return (0);
 }

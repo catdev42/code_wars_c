@@ -1,0 +1,599 @@
+lo and welcome
+0:02
+today we will solve the end queen's
+0:04
+problem using a super simple and
+0:06
+surprisingly effective algorithm
+0:09
+you will see by example how a few simple
+0:12
+changes can drastically improve the
+0:13
+running time of an algorithm for each
+0:16
+improvement we make we will solve larger
+0:18
+instances of the problem with more
+0:20
+queens
+0:22
+in the end we will use a clever trick to
+0:24
+make the algorithm even faster and find
+0:26
+out how large an instance we can solve
+0:29
+let's get started
+What is the N-Queens Problem?
+0:31
+what is the in queen's problem
+0:33
+in chess
+0:34
+the queen can move any number of squares
+0:37
+vertically
+0:38
+horizontally or diagonally
+0:42
+the goal in the end queen's problem is
+0:44
+to place n queens on an n by n
+0:46
+chessboard such that no queens can
+0:49
+attack each other
+0:50
+in this case we have a standard 8x8
+0:53
+chessboard so we have to place eight
+0:55
+queens
+0:57
+what you see here is actually a solution
+0:59
+to the eight queens problem because no
+1:01
+queens can attack each other
+1:04
+in this video we will attempt to solve
+1:06
+the end queen's problem using a local
+1:08
+search or hill climbing algorithm
+1:12
+i will demonstrate the algorithm with an
+1:14
+example of the four queens problem
+The Algorithm
+1:17
+we start by generating an initial state
+1:19
+which we will then try to improve
+1:21
+for each row we place a queen in a
+1:24
+random column like this
+1:27
+then we figure out how many pairs of
+1:29
+queens can attack each other
+1:31
+we call this the number of conflicts
+1:34
+in this state there are three conflicts
+1:38
+the algorithm will try every way of
+1:40
+moving a single queen to a different
+1:42
+column
+1:43
+each move results in a new state as you
+1:46
+can see here
+1:47
+this state for example is obtained by
+1:50
+moving the queen in the top row to the
+1:52
+leftmost column
+1:55
+and this one is the result of moving the
+1:57
+queen in the bottom row to the rightmost
+2:00
+column
+2:03
+note that there is always exactly one
+2:05
+queen in each row
+2:07
+the algorithm counts the number of
+2:09
+conflicts for each of these states and
+2:11
+then picks the state with fewest
+2:13
+conflicts
+2:14
+in this example the best state is this
+2:17
+one because it only has a single
+2:19
+conflict if there were multiple states
+2:22
+tied for the fewest number of conflicts
+2:24
+the algorithm would pick randomly
+2:26
+between them
+2:28
+that was one step of the algorithm
+2:30
+now we try to improve the new state in
+2:32
+the exact same way and repeat until we
+2:35
+hopefully find one with zero conflicts
+2:38
+in our example we can reach this
+2:40
+solution state by moving the top queen
+2:43
+one column to the left
+Tricky States
+2:45
+as you can see
+2:46
+this algorithm is super simple but it's
+2:49
+not always as easy as it appeared in my
+2:51
+example
+2:53
+the problem is that there is no
+2:54
+guarantee that a state can be improved
+2:56
+by moving one queen
+2:59
+consider this state for example which
+3:01
+has one conflict
+3:04
+there is no way to move a single queen
+3:06
+that results in a state with fewer
+3:08
+conflicts
+3:10
+the best move produces a state which
+3:12
+still has one conflict so the algorithm
+3:15
+will pick that one
+3:16
+in my implementation i allow up to 100
+3:19
+non-improving moves but after that we
+3:22
+consider the algorithm to be stuck
+3:25
+if that happens it starts from scratch
+3:27
+by generating a new random state
+3:30
+let's see the algorithm in action
+8-Queens Problem
+3:33
+we start by solving the eight queens
+3:35
+problem
+3:36
+i have made this program which tracks
+3:38
+the progress of the algorithm
+3:40
+when i start the algorithm in a second
+3:42
+you will see a plot with the conflicts
+3:44
+on the y-axis and the steps on the
+3:46
+x-axis
+3:48
+you can also see the number of conflicts
+3:51
+the current step
+3:52
+and the time spent here in the upper
+3:54
+right corner
+3:56
+okay
+3:57
+here we go
+3:59
+that was super fast
+4:01
+from the plot we can see that it was
+4:03
+easy to reduce the conflicts in the
+4:05
+beginning
+4:06
+but
+4:06
+towards the end we had some
+4:08
+non-improving steps before we found a
+4:10
+state with zero conflicts
+4:12
+let's check the solution
+4:20
+awesome
+4:21
+let's try with 25 queens
+25-Queens Problem
+4:27
+that was also easy
+4:33
+how about 100 queens
+100-Queens Problem
+4:45
+the algorithm is significantly slower
+4:47
+now but we are still able to find the
+4:49
+solution
+4:52
+now the squares are pretty small so i
+4:54
+will change to this theme instead
+4:56
+i think it makes it slightly easier to
+4:58
+see what's going on
+5:02
+now we will try with 250 queens
+5:07
+the algorithm is actually running
+5:10
+unfortunately it is so slow that we
+5:12
+don't even have two data points yet so
+5:14
+there is no line
+5:16
+oh
+5:17
+now we can see a little bit of progress
+5:19
+but let's try to make it faster
+Conflict Counting
+5:23
+here is how it works in the current
+5:24
+version of the program
+5:26
+initially we set the number of conflicts
+5:28
+to zero
+5:30
+for each queen we check if there is
+5:32
+another queen in the same column
+5:34
+or one of the diagonals
+5:36
+we don't have to check the row because
+5:39
+there is always exactly one queen per
+5:41
+row
+5:42
+whenever we encounter another queen we
+5:44
+increase the number of conflicts
+5:46
+the top queen is involved in two
+5:48
+conflicts
+5:52
+this queen is involved in 1
+5:54
+and so on
+6:03
+the conflict variable is equal to 8 but
+6:06
+there are only 4 conflicts in total
+6:09
+we get twice the actual number of
+6:10
+conflicts because every conflict is
+6:13
+counted twice
+6:14
+once from each queen
+6:16
+so in the end we have to divide by 2.
+6:20
+how fast is this conflict counting
+6:22
+there are n queens and for each of them
+6:25
+we check big o of n squares
+6:28
+so in the current version of the program
+6:31
+conflict counting takes big o of n
+6:33
+squared time
+6:34
+we can do better than that
+Faster Conflict Counting
+6:37
+with the exception of the initial state
+6:39
+a new state is generated by moving a
+6:41
+single queen from one column to another
+6:44
+in this example we have moved this queen
+6:46
+two columns to the left
+6:48
+the state on the left has six conflicts
+6:51
+and we will use that information to
+6:53
+count the conflicts for the state on the
+6:55
+right
+6:56
+the number of conflicts will be the same
+6:58
+except that we have to subtract some
+7:00
+conflicts that disappear and add some
+7:02
+new conflicts that arise
+7:05
+before moving the queen it was involved
+7:07
+in two conflicts which will now
+7:09
+disappear
+7:10
+in the new position the queen is
+7:12
+involved in one conflict which is new so
+7:16
+the conflicts in the new state is six
+7:19
+minus the two conflicts that disappear
+7:21
+plus the one new conflict for a total of
+7:24
+five conflicts
+7:27
+this way of counting conflicts only
+7:29
+takes big o of in time
+250-Queens Problem
+7:31
+now what happens when we try to solve
+7:33
+the 250 queens problem
+7:36
+it is much faster we don't need anywhere
+7:39
+near the same amount of patients
+7:51
+let's check the solution it has found
+7:55
+the queens are now very small but i
+7:57
+promise you they are all there
+7:59
+we can zoom in to see a few of them
+8:06
+fantastic
+8:07
+can we also solve the 500 queens problem
+500-Queens Problem
+8:12
+with some patients we can
+8:14
+let me speed up the video for you
+8:46
+before we try with more queens let's
+8:49
+improve conflict counting even more
+Even Faster Conflict Counting
+8:53
+here is the trick
+8:54
+if we store how many queens there are in
+8:56
+each column
+8:58
+and in each diagonal
+9:01
+and we keep track of that from state to
+9:03
+state
+9:04
+then we can quickly find out how many
+9:07
+conflicts a given queen is involved in
+9:10
+so
+9:11
+we do exactly like before
+9:12
+but instead of checking each square
+9:15
+along the column and the left and right
+9:16
+diagonal we can simply look up how many
+9:19
+queens there are in constant time let's
+9:22
+look at an example
+9:23
+how many conflicts is this queen
+9:25
+involved in
+9:28
+we look up the number of queens in the
+9:29
+column which is two including the queen
+9:32
+itself
+9:33
+so it must be involved in one conflict
+9:36
+in this column
+9:37
+next
+9:38
+we look up the number of queens in this
+9:40
+diagonal
+9:41
+it is one so there are no conflicts here
+9:45
+in the other diagonal there are two
+9:46
+queens so we add an additional conflict
+9:50
+for a total of two conflicts
+9:52
+with this change our conflict counting
+9:55
+now takes constant time
+500-Queens Problem Improvement
+9:57
+here is the 500 queens problem again
+10:00
+before and after this change
+10:06
+look how fast it is now
+1000-Queens Problem
+10:08
+let's try to solve the thousand queens
+10:10
+problem
+10:12
+the only thing we have changed is the
+10:14
+way we count conflicts
+10:16
+i think it's amazing how much faster the
+10:18
+algorithm is with the small changes we
+10:20
+have made
+10:36
+there is one last trick i promised to
+10:38
+show you in the beginning of this video
+Optimization Trick
+10:41
+this trick is a change to the algorithm
+10:43
+itself
+10:45
+now we will try the moves in random
+10:47
+order and if a move results in a state
+10:49
+with fewer conflicts then we pick it
+10:51
+immediately
+10:53
+so instead of trying all moves and
+10:55
+picking the best one we will settle for
+10:57
+any improving move
+10:59
+the hope is that we can avoid a lot of
+11:01
+work while still making good progress
+1000-Queens Problem Improvement
+11:04
+here is the 1000 queens problem again
+11:07
+before and after this change
+11:12
+so much better it was extremely fast in
+11:15
+the beginning because it didn't have to
+11:16
+try many moves to find one which reduced
+11:19
+the conflicts
+10000-Queens Problem
+11:21
+let's try the 10 000 queens problem
+11:25
+it's easy to see that the speed
+11:27
+decreases over time
+11:28
+the majority of the time is spent
+11:30
+resolving the last few conflicts
+11:32
+let me speed up this last part for you
+11:40
+the squares are now so small that you
+11:42
+cannot even see the queens after they
+11:43
+are placed
+11:45
+showing the solution became quite laggy
+11:47
+with this many queens
+11:49
+the zoom was not so smooth but we can
+11:51
+see this one queen on the huge
+11:53
+chessboard
+100000-Queens Problem
+11:55
+i also attempted the 100 000 queens
+11:57
+problem but as you can see here it was
+12:00
+going to take a long time especially
+12:02
+considering that the algorithm slows
+12:04
+down over time
+12:06
+perhaps in the future we will revisit
+12:08
+this problem and see if we can do even
+12:10
+better
+Thanks!
+12:12
+thank you for watching
+12:14
+let me know what you think about this
+12:15
+style of videos in the comments
+12:18
+if you found it interesting then
+12:20
+consider leaving a like and subscribing
+12:21
+to my channel
