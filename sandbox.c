@@ -1,10 +1,10 @@
 #include <stdbool.h>
 #include <stdlib.h>
+#include <signal.h>
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stdio.h>
-#include <signal.h>
 #include <errno.h>
 #include <string.h>
 #include <fcntl.h>
@@ -45,15 +45,15 @@ int sandbox(void (*f)(void), unsigned int timeout, bool verbose)
 		exit(0);
 	}
 	s.sa_handler = signal_handler;
+	s.sa_flags = SA_RESTART;
 	if (sigaction(SIGALRM, &s, NULL) < 0)
 		return (-1);
-	s.sa_flags = SA_RESTART;
 	alarm(timeout);
 	waitpid(pid, &status, 0);
 	if (WIFSIGNALED(status))
 	{
 		exitcode = WTERMSIG(status);
-		if (exitcode == SIGKILL || exitcode == SIGALRM)
+		if (exitcode == SIGKILL)
 		{
 			if (verbose && timeout > 0)
 				printf("Bad function: timed out after %i seconds\n", timeout);
@@ -88,5 +88,5 @@ int sandbox(void (*f)(void), unsigned int timeout, bool verbose)
 int main(void)
 {
 	int exitstatus = sandbox(bad_infinite, 4, true);
-	printf("Exit status: %d", exitstatus);
+	printf("Exit status: %d\n", exitstatus);
 }
