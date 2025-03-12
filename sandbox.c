@@ -49,7 +49,8 @@ int sandbox(void (*f)(void), unsigned int timeout, bool verbose)
 	if (sigaction(SIGALRM, &s, NULL) < 0)
 		return (-1);
 	alarm(timeout);
-	waitpid(pid, &status, 0);
+	if (waitpid(pid, &status, 0) == -1)
+		return (-1);
 
 	if (WIFEXITED(status))
 	{
