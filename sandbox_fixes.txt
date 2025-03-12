@@ -2,9 +2,9 @@ Things are a bit in the wrong order:
 
 sigaction intialization should be below the fork in main process (so its not inherited)
 the SA_RESTART should be before sigaction function is called (proper initialization of struct)
-there is a bit of a mistake inside WIFSIGNALED:
+there is a bit of a mistake inside WIFSIGNALED, should be:
 
-if (exitcode == SIGKILL)
+		if (exitcode == SIGKILL)
 		{
 			if (verbose && timeout > 0)
 				printf("Bad function: timed out after %i seconds\n", timeout);
