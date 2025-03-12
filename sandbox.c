@@ -50,21 +50,7 @@ int sandbox(void (*f)(void), unsigned int timeout, bool verbose)
 		return (-1);
 	alarm(timeout);
 	waitpid(pid, &status, 0);
-	if (WIFSIGNALED(status))
-	{
-		exitcode = WTERMSIG(status);
-		if (exitcode == SIGKILL)
-		{
-			if (verbose && timeout > 0)
-				printf("Bad function: timed out after %i seconds\n", timeout);
-		}
-		else
-		{
-			if (verbose)
-				printf("Bad function: %s\n", strsignal(exitcode));
-		}
-		return 0;
-	}
+
 	if (WIFEXITED(status))
 	{
 		exitcode = WEXITSTATUS(status);
@@ -80,6 +66,21 @@ int sandbox(void (*f)(void), unsigned int timeout, bool verbose)
 				printf("Bad function: exited with code %d\n", exitcode);
 			return 0;
 		}
+	}
+	if (WIFSIGNALED(status))
+	{
+		exitcode = WTERMSIG(status);
+		if (exitcode == SIGKILL)
+		{
+			if (verbose && timeout > 0)
+				printf("Bad function: timed out after %i seconds\n", timeout);
+		}
+		else
+		{
+			if (verbose)
+				printf("Bad function: %s\n", strsignal(exitcode));
+		}
+		return 0;
 	}
 	
 	return (-1);
