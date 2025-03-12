@@ -9,7 +9,7 @@
 #include <string.h>
 #include <fcntl.h>
 
-pid_t g_pid;
+pid_t g_pid = 0;
 
 void good_function(void)
 {
@@ -53,7 +53,7 @@ int sandbox(void (*f)(void), unsigned int timeout, bool verbose)
 	if (WIFSIGNALED(status))
 	{
 		exitcode = WTERMSIG(status);
-		if (exitcode == SIGKILL)
+		if (exitcode == SIGKILL || exitcode == SIGALRM)
 		{
 			if (verbose && timeout > 0)
 				printf("Bad function: timed out after %i seconds\n", timeout);
