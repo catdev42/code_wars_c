@@ -11,14 +11,19 @@ typedef struct	json {
 		INTEGER,
 		STRING
 	} type;
+
 	union {
+
 		struct {
-			struct pair	*data;
+			struct pair	*data; 
 			size_t		size;
 		} map;
+
 		int	integer;
+
 		char	*string;
 	};
+
 }	json;
 
 typedef struct	pair {
