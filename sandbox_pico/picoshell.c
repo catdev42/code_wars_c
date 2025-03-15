@@ -26,8 +26,8 @@ int	picoshell(char **cmds[])
 			close(pipefd[0]);
 			dup2(pipefd[1], 1);
 			close(pipefd[1]);
-			if (execvp(cmds[i][0], cmds[i]))
-				perror("execvp");
+			execvp(cmds[i][0], cmds[i])
+			perror("execvp");
 			exit(1);
 		}
 		close(pipefd[1]);
