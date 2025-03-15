@@ -37,12 +37,12 @@ int	picoshell(char **cmds[])
 		i++;
 	}
 	if ((pid = fork()) == -1)
-			return (-1);
+		return (-1);
 	if (pid == 0)
 	{
-			execvp(cmds[i][0], cmds[i])
-			perror("execvp");
-			exit(1);
+		execvp(cmds[i][0], cmds[i])
+		perror("execvp");
+		exit(1);
 	}
  wait(&status);
 	return 0;
