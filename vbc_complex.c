@@ -80,7 +80,7 @@ int eval_tree(node *tree)
 	}
 }
 
-
+/* if not a parenthesis, go here, it is the bottom node */
 node *extract_num(char **s)
 {
 	if (isdigit(**s))
