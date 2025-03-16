@@ -80,7 +80,6 @@ int eval_tree(node *tree)
 	}
 }
 
-/* if not a parenthesis, go here, it is the bottom node */
 node *extract_num(char **s)
 {
 	if (isdigit(**s))
@@ -108,6 +107,8 @@ node *if_highest_prio(char **s)
 	return extract_num(s);
 }
 
+/* send to find '(' else get number
+	check if there is a MULTI, if so, make a node with whatever is in "ret" in left and  whatever is after the MULTI on right */
 node *if_middle_prio(char **s)
 {
 	node *ret = if_highest_prio(s);
