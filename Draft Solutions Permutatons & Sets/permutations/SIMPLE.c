@@ -15,7 +15,15 @@ void	permute(char *str, int index, int len)
 	while (i < len)
 	{
 		swap(&str[index], &str[i]);
-		permute(str, index + 1, len);
+
+		char strnew[len + 1];
+		for (int j = 0; str[i]; j++)
+			strnew[j] = str[j];
+		strnew[len] = 0;
+		ft_sort(&strnew[index+1]);
+
+		permute(strnew, index + 1, len);
+		
 		swap(&str[index], &str[i]);
 		i++;
 	}
