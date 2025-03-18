@@ -1,0 +1,5 @@
+(3+3)*6
+
+        0 //go iflowest, ifmid, if high... //find parenthesis
+       / \
+	   

@@ -96,15 +96,18 @@ node *if_highest_prio(char **s)
 {
 	if (accept(s, '('))
 	{
+		//if find a parenthesis, eat it and parse
+		
 		node *ret = if_lowest_prio(s);
-		if (!expect(s, ')'))
+		if (!expect(s, ')')) //if the next one is a closing then destroy
 		{
 			destroy_tree(ret);
 			return NULL;
 		}
 		return ret;
 	}
-	return extract_num(s);
+	node *ret = extract_num(s);
+	return ret;
 }
 
 /* send to find '(' else get number
@@ -141,12 +144,12 @@ node *if_lowest_prio(char **s)
 	return ret;
 }
 
-node *parse_expr(char **s)
+node *parse_expr(char *s)
 {
-	node *ret = if_lowest_prio(s);
-	if(**s)
+	node *ret = if_lowest_prio(&s);
+	if(*s)
 	{
-		unexpected_char(**s);
+		unexpected_char(*s);
 		destroy_tree(ret);
 		return (NULL);
 	}
@@ -158,7 +161,7 @@ int main (int argc, char** argv)
 	if (argc!= 2)
 		return 1;
 	char *input = argv[1];
-	node *tree = parse_expr(&input);
+	node *tree = parse_expr(input);
 	if (!tree)
 		return 1;
 	printf("%d\n", eval_tree(tree));

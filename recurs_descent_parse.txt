@@ -1,0 +1,810 @@
+Introduction
+hi this is a brief tutorial on syntax
+and parsing if you need to write code to
+parse an expression
+this is the video for you i'm just going
+to give you a basic introduction to
+parsing
+it's a complex subject but i'm going to
+tell you all you need to know to get
+started
+in particular i'm going to talk about
+top-down parsing
+and i'm going to describe recursive
+descent parsing
+which is the simplest algorithm and the
+only one you'll really ever need
+so in this video i'm going to start by
+talking about the format of the input
+that is i'll cover the ideas of grammar
+and syntax notation
+i'll also talk about the output from the
+parsing algorithm
+that is how will we represent the result
+then i will describe the recursive
+descent parsing algorithm
+and if you're parsing expressions i'll
+also talk about
+how to evaluate the resulting expression
+and finally
+i'll close with some commentary
+Input
+so our goal is to write code that will
+parse an arithmetic expression
+here's an example of the input we'd like
+to be able to handle
+we see that it's got identifiers like x
+it's got numbers
+it's got infix operators that take two
+operands
+it's got prefix operators like the
+negation
+and we see parentheses
+in addition an expression may also have
+post-fixed
+operators and factorial is the example
+of that
+and it may have other things like
+function calls and so on
+but these i'm not going to discuss
+Pre precedence
+before we go any further i want to
+mention precedence and associativity
+remember that some operators have
+greater precedence
+so for example this expression here
+should be interpreted
+this way and not this way if the
+user of your parser intends to have this
+interpretation
+then they had better add parentheses to
+the input to the parser
+with associativity remember that with
+certain operators of equal precedence
+like subtraction and addition we want to
+process them in order so this expression
+for example would be interpreted this
+way
+and not this way which would give a
+different result so our parser will need
+to take into account
+the proper precedence and associativity
+of the expression and its operators
+Grammar
+before we can code up our
+parser we need to describe exactly which
+expressions are to be accepted
+that is we need to describe the language
+of expressions
+that our parser will accept and to do
+that we're going to provide
+a grammar for expressions
+a grammar defines a language and
+here i have a simple grammar for
+expressions
+and let's go through it and take a look
+and see what we have in
+every grammar we'll see a number of
+rules
+okay so here we see rules for e rules
+for t
+and rules for f these things e t and f
+are called non-terminal symbols or
+grammar symbols
+and this is the syntax for expressions
+so these
+rules define exactly what it means to be
+a legal expression
+we also see in these rules on the right
+hand side
+both non-terminal symbols like et and f
+as well as terminal symbols basically
+everything else
+so we see plus minus the asterisk
+for multiplication slash for divide we
+see
+id integer and some parentheses
+these are called the terminal symbols
+and they are not defined
+in the syntax for this particular
+grammar
+some of these such as plus and minus are
+literal things okay they're just single
+characters
+others like identifier and integer
+stand for classes of inputs
+so there are many different identifiers
+many different integers
+there are some variations on grammar
+notation
+and i wanted to mention one important
+one
+so here's our original grammar and
+we're showing the same exact grammar
+down here
+we have three rules for e but we're
+collapsing them
+using a vertical bar to indicate or so
+an
+e that is an expression is either a term
+plus an expression or a term minus an
+expression or a term
+by the way e stands for expression t
+stands for term
+and f stands for factor so
+if you multiply a bunch of factors
+together you get a term
+you add a bunch of terms together you
+get an expression
+Notation
+for our purposes we're going to define
+identifier
+as one or more characters so
+this notation here means one character
+followed by
+zero or more characters the braces
+mean zero or more we'll define
+integers as one or more digits
+so again you have the curly braces
+another notation you might see
+is curly braces with a plus sign and
+that means
+one or more occurrences so these two are
+equivalent
+many programming languages have slightly
+more complex definitions for identifiers
+for example we might define identifiers
+as
+a single character followed by zero or
+more
+characters digits or underscore
+characters
+a programming language might also define
+tokens like
+floating point numbers and so on but we
+won't go into that here
+when we scan one particular identifier
+that will be a token so our input
+consists of a series of tokens the token
+could be an identifier it could be a
+plus symbol or a multiplication symbol
+or a parenthesis
+an integer and so on and so forth so
+we'll view the input
+as a sequence of tokens
+Lexical Analysis
+before we can parse the input we need to
+break it up into a sequence of tokens
+this is known as the lexical analysis
+part of your parser and
+we have a lexer sometimes called a
+tokenizer that performs this
+tokenization of the input so
+it'll read the input and break it into
+tokens
+so in our organization we will assume
+that we have a function called scan
+token i'm not going to specify it here
+but we'll assume that it scans the input
+reads in from the input
+and we've got a variable called next
+token and every time we
+call scan token it will set this
+variable
+to point to the newly scanned token
+i'm going to assume that we're using an
+object-oriented programming language
+and so we'll represent tokens
+with objects so here's a an object
+of class integer and here's an object of
+class i
+identifier i show my objects this way
+and the class integer has a single field
+value and the class identifier has a
+single
+field called string which points to the
+actual characters that are involved
+in the identifier
+Object Representation
+the goal of our parser is to read in
+some expression
+such as this one right here and produce
+some
+output so some representation of the
+expression
+so the first representation of this
+expression is shown right here and this
+is the simplest you can see that we
+add x and five first and then uh
+negate that and then we multiply that
+with two so this tree
+here reflects the meaning of this
+expression
+we'll represent the tree with objects in
+a pretty much straightforward one-to-one
+way
+we'll have classes called multiply
+negate
+add subtract and so on as well as
+classes for identifier and integer so
+this tree right here is naturally
+represented
+with this collection of objects
+Classes
+let me be a little bit more precise
+about how we're going to represent
+expressions
+we're going to use these classes here so
+we've got a class called
+add subtract multiply divide negate
+identifier and integer we'll also have
+a class called tree node and all these
+others will be subclasses
+of that superclass so these are all
+different kinds of tree nodes
+so for the infix operators like add and
+multiply
+we'll have two fields in the class
+called
+left and right and these will contain
+pointers to
+other tree nodes depending on what kind
+of sub-expressions are being added
+together
+well that will determine what exactly is
+down here
+being pointed to for prefix operators
+like the gate will have just a single
+field
+called arg or argument and that will
+point to some
+tree node you're probably going to want
+Print Methods
+to have some way to print out
+an expression if for no other reason
+you'd like to verify that your parser
+is working correctly by printing out the
+internal representation that the parser
+is producing
+so let's suggest that we have a print
+method for each one of our classes
+these are going to be recursive methods
+that call each other
+so for example the class multiply or
+any other infix operator would work like
+this
+it's got a pointer to the left sub-tree
+and a pointer to the right
+what print is going to do when called on
+this particular node
+is print an opening parenthesis then
+it's going to call itself recursively to
+print out whatever is pointed to by the
+left pointer then an asterisk then call
+itself again recursively to print out
+whatever is pointed to by the right uh
+our field
+and finally a closing parenthesis
+a unary operator like the negate class
+just as a single field points to its
+argument
+and it will print an opening parenthesis
+followed by the
+negate symbol followed by the subtree
+whatever it is
+and then a closing parenthesis so for
+example
+if you have this particular expression
+okay
+it's going to print out something like
+this
+you'll see it's got a
+a lot of parentheses but that makes
+sure that the output is exactly
+unambiguous
+so you can be sure exactly what your
+representation
+is i should mention that if for some
+reason you
+get a cycle in your tree and you try to
+print this out
+you run into an infinite loop okay you
+just keep printing 5
+times 7 plus and so on
+eval Methods
+let's assume that your parser has read
+in an expression
+and built an internal representation of
+that expression
+now you'd like to evaluate the
+expression
+so for that what we'll do is have an
+eval method
+implemented in each of the various
+classes that we have
+so for example in the
+add class we've got an eval method
+that simply calls itself recursively
+on the left sub-tree then calls itself
+recursively on the right sub-tree
+adds them together and returns the
+result so each one of these eval methods
+is going to evaluate the subtrees and
+then return
+the final value of that complete
+expression
+a unary operator like negate
+would simply call itself recursively on
+the subtree negate that and return the
+resulting value
+if the node happens to be an integer
+then the eval method simply returns its
+value
+if the node is an identifier then
+well we have to figure out what the
+current value of that variable
+is and return it
+we're now ready to describe the top-down
+recursive descent
+parsing algorithm we're going to have a
+bunch of functions
+one for each non-terminal grammar symbol
+each of these functions will scan a
+bunch of tokens
+and will return a pointer to the tree
+that it builds
+to represent whatever it parsed so for
+example parsee
+will parse an expression and return a
+pointer to the
+tree for that expression parse t will
+parse a term
+and parse f will parse a factor
+at any moment we'll have a variable
+called next token
+which will contain the next unscanned
+token from the input so we can look at
+it and see
+what's coming up we'll call our
+lexer function scan token
+to advance to the next token that is to
+read in some more input
+and see what the next token in the input
+stream is
+if there are any problems and by problem
+i mean the input is
+not grammatically correct then these
+functions will return
+null so here's the overall organization
+Program Organization
+of the program
+we'll have a couple of variables next
+token is a global variable that's shared
+among all the parsing
+functions and we have a variable called
+result tree
+so what our program is going to do is
+start by
+scanning the first token and then
+calling parsee
+to parse the entire expression that
+builds a representation
+which it returns and we store that in
+result tree
+then we might print out that tree
+to see what it is we read in or we might
+call a vowel
+to evaluate the expression and then
+print the result
+after we parse the expression we need to
+make sure that the next
+thing on the input is the new line or
+the end of file or the end of input
+otherwise it's an error because we could
+have some kind of input like this
+here we can scan an expression properly
+no problem there
+but we need to make sure that the next
+thing is not
+anything else besides the end marker
+Parse Factor
+let's look at the function that parses a
+factor which can be an identifier
+an integer or an expression inside
+parentheses
+or a negation symbol followed by another
+factor
+so the function is basically just an if
+statement we check the next token to see
+whether it's an identifier
+an integer an opening parenthesis or a
+negation sign
+if it's an identifier or an integer then
+we simply return the token itself
+more precisely we return the object that
+represents the
+identifier or the integer if the next
+token is
+in opening parentheses then we scan
+past that opening parenthesis to the
+next symbol and then we call parsee to
+parse an expression
+call it a we can check to see whether
+there was an error and if so we just
+return null
+and then we make sure that the thing
+following the expression is a closing
+parenthesis
+and we pick that up and finally we
+return the expression
+if it wasn't a closing parenthesis then
+we've got an
+error so we return null finally if we
+saw
+a negation sign then we pick it up we
+scan it
+nope i should put parentheses there
+and then we call parse factor to pick up
+another factor
+and then we build a new object
+here we're saying new and we build a
+negate object
+whose argument will point to the factor
+that we just parsed
+and if it's none of those things then
+we return null it was an error
+Parse Function
+let's keep going with the function that
+parses expressions
+before we go any further let me say that
+there's a problem with this code and
+i'll talk about that in a second
+so an expression is t plus e or t
+minus e or t alone so we start
+in all three of these cases by picking
+up a term so we
+call parse term and then we see whether
+we've got a plus
+or a minus if we've got a plus then we
+pick that up
+and then we pick up the e okay that's
+calling parse e right here
+then we build an add node using
+the first term that we parsed followed
+by
+the expression b and then we return that
+node if we have a negative sign
+instead then same thing we scan the
+negative sign
+partial expression and then we build a
+new subtract node
+with those two things and then return
+that
+and finally if there's not a plus or
+minus following the t
+then we simply return the term itself
+The Problem
+as i said the function as i just
+presented it
+has a problem it doesn't handle
+associativity correctly
+to see it fail let's look at this
+particular example
+an expression goes to a term minus an
+expression
+okay so the the relevant code we pick up
+the t
+by calling parse t uh
+then uh we check and see we've got a
+minus sign
+so we call parse e to pick up the
+expression
+and then we build a subtract node with
+the term
+a and the expression b
+okay let's look at this particular input
+seven minus five
+plus one and according to our rules
+of associativity we do the subtraction
+first before the addition
+so the way this thing will handle this
+expression
+is it's first calls
+parse t to pick up the seven
+okay and then it calls itself
+recursively to pick up another
+expression
+so this call right here picks up the
+seven then we see the minus sign then we
+call par c to pick up everything else
+and so then it's going to build a
+subtract node
+with the seven and everything else that
+it picked up so it's going to return
+a representation that looks like this
+tree here
+minus sign at the root seven on the left
+and then everything else on the right
+so uh assuming that the rest of the
+expression is parsed
+and that's five plus one so we have five
+plus one here
+and our final result will be this but
+this tree has this meaning it means take
+7 and subtract
+the result of adding 5 plus 1 and that
+is not
+the correct interpretation of our input
+The Solution
+so now let's talk about how to fix this
+we could always take our
+original rule and reverse the t and the
+e
+so here we are producing a new rule with
+e
+plus t and e minus t and
+that is a correct grammar and the
+language it describes is the same
+and in fact it models the associativity
+correctly
+however our recursive descent algorithm
+will
+not work with this particular grammar
+so let's take a look at what happens
+here's our parse
+e function that and we've now
+rewritten it using the second rule so
+the first thing we do is we parse an e
+okay here we call parse e and then we
+check the next token and
+if for example it is a plus then we
+parse a t
+so we scan the plus and we call parse t
+and then we build a new add
+function uh using the result of parse e
+and the result of parse t a and b
+however
+this is infinite recursion right par c
+the first thing it does is call par c
+itself without scanning any tokens so
+this is infinite recurs
+recursion nothing will ever get scanned
+and
+this is a problem in general
+uh the problem happens when we have
+rules like this in our grammar
+a goes to something else and the right
+hand side starts with the very same
+non-terminal
+see we have that right here e goes to e
+plus t
+okay we can also have more complex
+situations
+for example a goes to a rule that starts
+with b
+b b goes to something that starts with c
+and there's a rule for c that starts
+with a so
+with grammars like this we cannot use
+recursive descent parsing
+The Code
+fortunately there's a nice simple
+solution what we're going to do is
+rewrite
+this rule as e goes to t
+followed by zero or more occurrences of
+plus t minus t plus t minus t and so on
+here's what the code now looks like for
+the parse
+e function we first call parse t
+to pick up the first term and then
+we have a loop so this is a
+infinite loop with a breaking by
+returning
+we look at the next token if it's a plus
+then we scan it and then we parse
+another t
+and we build an add node and we keep
+going
+if it's a minus we do a similar thing
+if there's no plus or no no minus then
+finally we return
+a so we're building up a all the while
+i've left out the error checking code
+here
+but you could figure that out it's
+pretty straightforward we just check for
+null
+so let's see how this thing works on a
+particular example
+we're parsing our seven minus five plus
+one
+so we start by calling parse t and we
+pick up the seven
+okay so that's uh what we get here at
+this point
+we've parsed the seven and we've got a
+pointing to a 7. and we go into our loop
+here and we see that there is a
+minus sign so what we're going to do is
+scan the minus sign we're going to call
+parse t
+and then we're going to create a new
+node a subtract node
+and we'll call it a and we're going to
+use as the left pointer
+the pointer to the previous a that is
+the pointer to
+the 7 node and b the new
+term that we just picked up which is 5
+and that will become our new
+a okay and then we repeat the loop
+and what happens we see that the next
+symbol is a plus sign
+so we scan the plus sign
+and call parse t and here we pick up
+the one and we
+create a new add node using the old
+previous tree a which is
+this tree right here and
+the new one that we just picked up the
+integer one
+so here we build our new node our left
+pointer goes to the previous version of
+a and our right pointer goes to the
+integer 1.
+so this is a tree it's not written very
+much like a tree so if i reorganize it
+you can see that the top note is an add
+left goes to subtract and then it's
+subtract seven
+minus five and the other operand to the
+addition is one so it is this
+interpretation
+that this code will build up
+the rule for t is similar we have to
+modify it in a similar way because it
+has the same
+infinite recursion problem as it's
+written right now
+but i think you can do that i taught
+compiler design and theory of
+computation for several years
+and the whole subject of languages and
+grammars
+and parsing algorithms is really quite
+fascinating there's really a lot to it
+basically we can break down languages
+and parsing into
+several different categories we have ll
+languages ll parsers lr
+and everything else we've been talking
+about something called
+ll1 our grammar is ll1 that stands for
+the one is for one token lookahead so we
+can basically see where we're going just
+by looking at the next token
+it's great because we can create top
+down recursive descent parsers
+that's a very fast and simple algorithm
+with good error reporting
+and these languages ll1 languages are
+very easy for humans to parse
+and another thing that's important
+is we have good air reporting and good
+error recovery
+the user often will have incorrect input
+and that can really confuse a parser we
+want to avoid
+printing out a thousand different
+messages from
+one single error we want to print out a
+nice
+concise error that tells the user what
+they did wrong
+there is a class of languages called llk
+and
+ll1 is the simplest version of that and
+as i said
+the grammar that i presented here is ll1
+we've also got more complex grammars in
+languages called lr
+lrk in general there's some variations
+slr and lalr i'm not going to go into
+what all these stand for but
+uh these are necessary for more complex
+programming languages like c
+and c plus and java the algorithms for
+parsing
+are more complicated in fact they're
+really quite
+complicated i've taught them for many
+years and it's really hard for the
+students to understand
+hard for me to understand at first in
+fact
+these languages are also harder for
+humans to parse and i think that's
+really
+very relevant i don't want a complicated
+language particularly
+life is complicated enough without the
+unnecessary complexity of languages
+these languages also are
+more difficult to create parsers that
+produce good error messages and
+recover appropriately from errors so
+that's really a practical issue beyond
+the
+lr and ll grammars we have
+ambiguous grammars and ambiguous
+languages and
+you know it gets even more interesting
+after that and gradually goes into the
+theory of computation
+but that's uh for another video one
+thing you may have heard about
+is parser tools also called partial
+generators
+the idea with one of these tools is that
+the input
+is a grammar okay so you're putting a
+grammar
+into the tool and the output is a parser
+or more precisely code for a parser or
+something that you
+can embed in your own program
+and the idea is that these tools are
+supposed to make
+writing a compiler easier i do want to
+say that
+parsing is definitely not the hard part
+of writing a compiler
+having written several compilers i've
+learned that
+the parsing is the really the easiest
+part
+in fact you know my opinion
+is that i prefer to avoid parser tools
+altogether
+you know the tool can break software rot
+is real things that used to work
+suddenly stop working because of
+upgrades and other
+software that they depend on and it's
+complex
+it's a huge problem because what if the
+tool breaks then what are you supposed
+to do
+you can't necessarily fix the tool
+uh i generally prefer to use my own code
+i like to program what can i say i also
+believe very strongly that ll languages
+like i've just
+demonstrated are really superior to
+lr and more complex languages for
+defining programming languages and other
+sorts of computer input
+ll languages are easier for human humans
+to
+learn and to use humans have to parse
+the input
+you know they humans read programs and
+they have to be able to
+do the parsing and these lr grammars can
+be
+difficult in certain situations so it's
+it's hard to understand what it is
+you're reading
+so that's an important aspect simplicity
+is always good
+simpler parsing is also good these ll
+languages are easier to parse they're
+fast
+and we can have better error reporting
+and air recovery
+and i feel that lr grammars and lr
+parsers
+are basically just unnecessary
+complexity well that's my opinion anyway
+thanks for watching my short tutorial
