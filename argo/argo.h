@@ -11,19 +11,19 @@ typedef struct	json {
 		INTEGER,
 		STRING
 	} type;
-
+	//////
 	union {
 
 		struct {
 			struct pair	*data; 
 			size_t		size;
 		} map;
-
+	
 		int	integer;
-
+	
 		char	*string;
 	};
-
+	//////
 }	json;
 
 typedef struct	pair {
@@ -33,3 +33,14 @@ typedef struct	pair {
 
 void	free_json(json j);
 int	argo(json *dst, FILE *stream);
+
+
+// int main()
+// {
+// 	json j;
+// 	if (j.type == INTEGER)
+// 		j.integer;
+// 	else (j.type == MAP)
+// 		j.map;
+
+// }

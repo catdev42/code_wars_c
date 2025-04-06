@@ -13,6 +13,7 @@ values of color >= 0 && color <= 2^16 (65536) (2 bytes)
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 
 void	helper(int **img, int m, int *n, int i, int j, int ogcol, int color);
 
@@ -24,21 +25,21 @@ int	**floodFill(int **image, int m, int *n, int sr, int sc, int color,
 	int	ogcol;
 
 	ogcol = image[sr][sc];
-	ret = calloc(m + 1, sizeof(int *));
+	ret = calloc(m , sizeof(int *));
 	*returnColumnSizes = calloc(m, sizeof(int));
 	*returnSize = m;
 	if (!ret || !returnColumnSizes)
 		exit(1);
-	ret[m] = NULL;
 	i = 0;
 	while (i < m)
 	{
-		returnColumnSizes[i];
+		(*returnColumnSizes)[i] = n[i];
 		ret[i] = calloc(n[i], sizeof(int));
 		if (!ret[i])
 			exit(1);
 		for (int j = 0; j < n[i]; j++)
 			ret[i][j] = image[i][j]; // wrote into array from given
+		i++;
 	}
 	if (ogcol == color)
 		return (ret);
@@ -52,13 +53,13 @@ void	helper(int **img, int m, int *n, int i, int j, int ogcol, int color)
 		return ;
 	else
 		(img[i][j] = color);
-	if (i >= 1)
+	if (i >= 1 && img[i - 1][j] == ogcol)
 		helper(img, m, n, i - 1, j, ogcol, color);
-	if (j >= 1)
+	if (j >= 1 && img[i][j - 1] == ogcol)
 		helper(img, m, n, i, j - 1, ogcol, color);
-	if (j < n[i] - 1)
+	if (j < n[i] - 1 && img[i][j + 1] == ogcol)
 		helper(img, m, n, i, j + 1, ogcol, color);
-	if (i < m - 1)
+	if (i < m - 1 && img[i + 1][j] == ogcol)
 		helper(img, m, n, i + 1, j, ogcol, color);
 }
 
@@ -74,6 +75,28 @@ int	main(void)
 	int *returnColumnSizes;
 	int color = 2;
 
-	int **temp = floodFill(image, n, n, 1, 1, color, &returnSize,
-			&returnColumnSizes);
+	int **imagePtr = malloc(m * sizeof(int *));
+    for (int i = 0; i < m; i++)
+        imagePtr[i] = image[i];
+
+
+    // Call the floodFill function
+    int **result = floodFill(imagePtr, m, n, 1, 1, color, &returnSize, &returnColumnSizes);
+
+    // Print the resulting image
+    printf("Resulting Image:\n");
+    for (int i = 0; i < returnSize; i++)
+    {
+        for (int j = 0; j < n[i]; j++)
+            printf("%d ", result[i][j]);
+        printf("\n");
+    }
+
+    // Free allocated memory
+    for (int i = 0; i < returnSize; i++)
+        free(result[i]);
+    free(result);
+    free(returnColumnSizes);
+    free(imagePtr);
+
 }
