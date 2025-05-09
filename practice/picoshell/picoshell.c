@@ -4,7 +4,6 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <unistd.h>
 
 int	picoshell(char **cmds[]);
 
@@ -27,7 +26,8 @@ int	picoshell(char **cmds[])
 			close(pipefd[0]);
 			dup2(pipefd[1], 1);
 			close(pipefd[1]);
-			execvp(cmds[i][0], cmds[i]);
+			execvp(cmds[i][0], cmds[i])
+			perror("execvp");
 			exit(1);
 		}
 		close(pipefd[1]);
@@ -40,7 +40,8 @@ int	picoshell(char **cmds[])
 		return (-1);
 	if (pid == 0)
 	{
-		execvp(cmds[i][0], cmds[i]);
+		execvp(cmds[i][0], cmds[i])
+		perror("execvp");
 		exit(1);
 	}
  wait(&status);
