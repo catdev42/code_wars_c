@@ -13,7 +13,9 @@ int	picoshell(char **cmds[])
 	pid_t	pid;
 	int		status;
 	int		pipefd[2];
+	int		fdin;
 
+	fdin = dup(0);
 	i = 0;
 	while (cmds[i + 1])
 	{
@@ -26,7 +28,7 @@ int	picoshell(char **cmds[])
 			close(pipefd[0]);
 			dup2(pipefd[1], 1);
 			close(pipefd[1]);
-			execvp(cmds[i][0], cmds[i])
+			execvp(cmds[i][0], cmds[i]);
 			perror("execvp");
 			exit(1);
 		}
@@ -40,12 +42,14 @@ int	picoshell(char **cmds[])
 		return (-1);
 	if (pid == 0)
 	{
-		execvp(cmds[i][0], cmds[i])
+		execvp(cmds[i][0], cmds[i]);
 		perror("execvp");
 		exit(1);
 	}
- wait(&status);
-	return 0;
+	wait(&status);
+	dup2(fdin, 0);
+	close(fdin);
+	return (0);
 }
 
 int	main(int argc, char **argv)
