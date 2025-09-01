@@ -3,7 +3,7 @@
 
 int main()
 {
-    const bigint a(42);
+    const bigint a(0x642);
     bigint b(21), c, d(1337), e(d);
 
      std::cout << std::boolalpha;

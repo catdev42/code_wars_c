@@ -32,6 +32,8 @@ public:
         }
     }
     bigint(const bigint &other) : num(other.num) {}
+    bigint &operator=(bigint const &other) {num = other.num;return *this;}
+
     ~bigint() {}
 
     deque<int> getNum() const
@@ -69,23 +71,22 @@ public:
 
     bigint operator+(const bigint &other) const
     {
-        bigint ret = *this;
-
-        deque<int> otherNum = other.num;
+        bigint ret;
 
         int i = num.size() - 1;
-        int j = otherNum.size() - 1;
+        int j = other.num.size() - 1;
         int carry = 0;
-        while (i >= 0 || j >= 0)
-        {
-            int a = 0;
-            int b = 0;
-            int result = 0;
+        int a;
+        int b;
+        int result;
 
-            if (i >= 0)
-                a = num[i];
-            if (j >= 0)
-                b = otherNum[j];
+        while (i >= 0 && j >= 0)
+        {
+            a = 0;
+            b = 0;
+            result = 0;
+            a = num[i];
+            b = other.num[j];
             if (carry == 1)
                 a = a + 1;
 
@@ -97,6 +98,19 @@ public:
             result = (a + b) % 10; // ex: (9 + 8 )% 10 = 5 //757
             ret.num.push_front(result);
             i--;
+            j--;
+        }
+
+        while (i >= 0)
+        {
+            ret.num.push_front(num[i] + carry);
+            carry = 0;
+            i--;
+        }
+        while (j >= 0)
+        {
+            ret.num.push_front(other.num[j]+carry);
+            carry = 0;
             j--;
         }
         return ret;
