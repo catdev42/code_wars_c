@@ -7,10 +7,10 @@
         {
         "name": "(gdb) Launch", "type": "cppdbg",
         "request": "launch",
-        "program": "${workspaceFolder}/a.out",
+        "program": "${workspaceFolder}/5_bigint/a.out",
         "args": ["3+(6*6)"],
         "stopAtEntry": false,
-        "cwd": "${workspaceFolder}", 
+        "cwd": "${workspaceFolder}/5_bigint", 
         "environment": [],
         "externalConsole": false,
         "MIMode": "gdb",
