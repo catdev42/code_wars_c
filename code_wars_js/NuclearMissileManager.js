@@ -7,13 +7,27 @@ async function launchAll(launchMissile) {
 		launchMissile(i);
 		let check = await delay(1000);
 	}
-
-	//   for(var i = 0; i < 5; i++) {
-	//     setTimeout(function() {
-	//       launchMissile(i);
-	//     }, i * 1000);
-	//   }
 }
+
+//other
+// function launchAll(launchMissile) {
+//   for(let i = 0; i < 5; i++) {
+//     setTimeout(function() {
+//       launchMissile(i);
+//     }, i * 1000);
+//   }
+// }
+
+// other
+// function launchAll(launchMissile) {
+//   for (var i = 0; i < 5; i++) {
+//     (function(i) {
+//       setTimeout(() => {
+//         launchMissile(i);
+//       }, i * 1000);
+//     })(i);
+//   }
+// }
 
 //by the time the missiles are launching,
 //the for loop has finished running and i == 5 :)
